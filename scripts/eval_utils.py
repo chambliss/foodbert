@@ -118,6 +118,7 @@ def count_misses(tag, model_labels: list, true_labels: list) -> int:
     for label in true_labels[tag]:
         if label not in model_labels[tag]:
             misses += 1
+            logger.info(f"Missed entity: {label['text']}")
             
     return misses
 
@@ -133,7 +134,6 @@ def judge_tags(tag: str, model_labels: dict, true_labels: dict, text: str):
     true_labels_for_tag = true_labels[tag]
     all_other_true_labels = get_other_true_labels(tag, true_labels)
     other_tag = "Product" if tag == "Ingredient" else "Ingredient"
-    logger.info("Example text:", text)
 
     for label in model_labels[tag]:
         
@@ -237,7 +237,7 @@ def evaluate_model(model_path: str):
 
     # Set up logging for model errors
     logging.basicConfig(filename=os.path.join(eval_destination, "preds.log"),
-    )
+    format='%(message)s', filemode="w")
     logger.setLevel("INFO")
 
     model = FoodModel(model_path)
@@ -250,11 +250,14 @@ def evaluate_model(model_path: str):
     for example in examples:
 
         text = example["data"]["text"]
+        logger.info(f"TEXT: {text}")
         true_labels = reformat_true_labels(example["completions"])
         model_labels = reformat_model_labels(model.extract_foods(text))
         
         for tag in tags:
             perf_dict[tag] += judge_tags(tag, model_labels, true_labels, text)
+        
+        logger.info("") # Add newline after each example
 
     # Metrics
     perf_df = pd.DataFrame(judge_perf(perf_dict))
