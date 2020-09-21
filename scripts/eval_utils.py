@@ -14,7 +14,7 @@ logger = logging.getLogger("errors")
 
 performance_dir = "../data/performance"
 eval_file_path = "eval_labeled.json"
-model_path = "../models/model_05_seed_8"
+model_path = "../models/model_05_seed_9"
 
 def flat_accuracy(gt_labels, pred_labels):    
     return (np.array(gt_labels) == np.array(pred_labels)).mean()
@@ -165,7 +165,6 @@ def judge_tags(tag: str, model_labels: dict, true_labels: dict, text: str):
 
     return results
 
-
 def judge_perf(perf_dict: dict):
     
     perf = []
@@ -177,8 +176,11 @@ def judge_perf(perf_dict: dict):
         prec_denom = sum(perf_dict[ent].values()) - missed 
         rec_denom = sum(perf_dict[ent].values()) - perf_dict[ent]['not a named entity']
 
-        prec_strict = perf_dict[ent]['correctly classified, total overlap'] / prec_denom
-        prec_loose = (perf_dict[ent]['correctly classified, total overlap'] + 
+        if prec_denom == 0:
+            prec_strict, prec_loose = 0, 0
+        else:
+            prec_strict = perf_dict[ent]['correctly classified, total overlap'] / prec_denom
+            prec_loose = (perf_dict[ent]['correctly classified, total overlap'] + 
                       perf_dict[ent]['correctly classified, partial overlap']) / prec_denom
 
         rec_strict = perf_dict[ent]['correctly classified, total overlap'] / rec_denom
@@ -192,7 +194,6 @@ def judge_perf(perf_dict: dict):
     perf_df.columns = ['p_strict', 'p_loose', 'r_strict', 'r_loose']
     
     return perf_df.round(3)
-
 
 def reformat_true_labels(completions: list) -> dict:
     
@@ -225,14 +226,14 @@ def reformat_model_labels(entities: dict) -> dict:
 
     return reformatted
 
-def evaluate_model(model_path: str): 
+def evaluate_model(model_path: str, no_product_labels=False): 
 
     model_dir = model_path.split('/')[-1]
     eval_destination = os.path.join(performance_dir, model_dir)
     if not os.path.exists(eval_destination):
         os.mkdir(eval_destination)
 
-    with open(os.path.join(performance_dir, eval_file_path)) as f:
+    with open(os.path.join("../data", eval_file_path)) as f:
         examples = json.load(f)
 
     # Set up logging for model errors
@@ -240,7 +241,7 @@ def evaluate_model(model_path: str):
     format='%(message)s', filemode="w")
     logger.setLevel("INFO")
 
-    model = FoodModel(model_path)
+    model = FoodModel(model_path, no_product_labels=no_product_labels)
     tags = ['Ingredient', 'Product']
     perf_dict = {
         'Ingredient': Counter(),

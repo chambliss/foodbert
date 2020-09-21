@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from transformers import DistilBertForTokenClassification, DistilBertTokenizerFast
 
-from data_utils import id2tag, flatten
+from data_utils import id2tag, id2tag_no_prod, flatten
 # from eval_utils import flat_accuracy, annot_confusion_matrix
 
 TRAIN_DATA_PATH = "../data/result.conll"
@@ -16,14 +16,15 @@ model_path = "../models/model_05_seed_8/"
 
 class FoodModel:
 
-    def __init__(self, model_path: str):
+    def __init__(self, model_path: str, no_product_labels=False):
         self.model = DistilBertForTokenClassification.from_pretrained(model_path)
         self.model.to(device)
-        self.tokenizer = DistilBertTokenizerFast.from_pretrained('distilbert-base-cased', do_lower_case=False)
         self.model.eval()
+        self.tokenizer = DistilBertTokenizerFast.from_pretrained('distilbert-base-cased', do_lower_case=False)
+        self.label_dict = id2tag if no_product_labels == False else id2tag_no_prod
 
     def ids_to_labels(self, label_ids: list) -> list:
-        return [id2tag[tensor.item()] for tensor in label_ids]
+        return [self.label_dict[tensor.item()] for tensor in label_ids]
 
     def predict(self, text: str, entities_only=False):
 
@@ -61,7 +62,16 @@ class FoodModel:
         return pred_summary
 
     def extract_foods(self, text: str):
-        return self.predict(text, entities_only=True)
+        entities = self.predict(text, entities_only=True)
+        
+        # Extra quality control; delete any tags 3 chars or shorter
+        for ent_type in entities:
+            ents = entities[ent_type]
+            for ent in ents:
+                if len(ent['text']) <= 3:
+                    entities[ent_type].remove(ent)
+
+        return entities
 
     def get_lowest_confidence_score(self, entities: dict):
         ents = flatten(entities.values())
@@ -147,7 +157,7 @@ class FoodModel:
             
             if prefix == "I":
                 # Next label does not continue the entity
-                if prev_prefix == "O" or (prev_prefix in ["B", "I"] and label_type != prev_label_type):
+                if i == 0 or prev_prefix == "O" or (prev_prefix in ["B", "I"] and label_type != prev_label_type):
                      entity_start = offsets[i][0]
 
                 if next_label_type != label_type or next_prefix != "I": 
@@ -245,3 +255,14 @@ def do_preds(model, examples: List[str], outfile='preds.log'):
 #     os.remove(outfile)
 
 # do_preds(model, sents, outfile=outfile)
+if __name__ == "__main__":
+    model = FoodModel(model_path)
+
+    with open("../data/train_data_to_label_2.txt") as f:
+        sents = f.read().split("\n\n")
+
+    outfile = "../data/train_2_labelstudio.json"
+    if os.path.exists(outfile):
+        os.remove(outfile)
+
+    do_preds(model, sents, outfile=outfile)
