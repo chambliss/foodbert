@@ -7,12 +7,11 @@ import torch
 from transformers import DistilBertForTokenClassification, DistilBertTokenizerFast
 
 from data_utils import id2tag, id2tag_no_prod, flatten
-# from eval_utils import flat_accuracy, annot_confusion_matrix
-
-TRAIN_DATA_PATH = "../data/result.conll"
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model_path = "../models/model_05_seed_8/"
+model_path = "../models/model_07_seed_9/"
+data_to_label = "../data/raw/curated_examples_03.txt"
+labeled_save_path = "../data/raw/curated_examples_03_iob.txt"
 
 class FoodModel:
 
@@ -96,6 +95,15 @@ class FoodModel:
         }
         return pred_skeleton
 
+    def predict_to_iob(self, text: str) -> str:
+
+        pred = self.predict(text)
+        toks, labs = pred["tokens"], pred["labels"]
+        lines = [f"{t}\t{l}" for t, l in zip(toks, labs)]
+        output = "\n".join(lines) + "\n\n"
+
+        return output
+        
     def predict_for_labelstudio(self, text: str):
 
         """
@@ -230,16 +238,21 @@ def get_prev_and_next_labels(idx: int, labels: List[str]):
 
         return (prev_label, prev_prefix, prev_label_type, next_label, next_prefix, next_label_type)
 
-
 def do_preds(model, examples: List[str], outfile='preds.log'): 
     
     # preds = [{"text": item, "entities": model.predict(item, entities_only=True)} 
     #         for item in examples]
 
-    preds = [model.predict_for_labelstudio(item) for item in examples]
-
+    # preds = [model.predict_for_labelstudio(item) for item in examples]
+    # with open(outfile, "w") as f:
+    #     json.dump(preds, f)
+    
+    preds = [model.predict_to_iob(item) for item in examples]
     with open(outfile, "w") as f:
-        json.dump(preds, f)
+        for pred in preds:
+            f.write(pred)
+    
+
     
     # for p in preds: 
     #      print_example(p, outfile=outfile)        
@@ -258,10 +271,10 @@ def do_preds(model, examples: List[str], outfile='preds.log'):
 if __name__ == "__main__":
     model = FoodModel(model_path)
 
-    with open("../data/train_data_to_label_2.txt") as f:
+    with open(data_to_label) as f:
         sents = f.read().split("\n\n")
 
-    outfile = "../data/train_2_labelstudio.json"
+    outfile = labeled_save_path
     if os.path.exists(outfile):
         os.remove(outfile)
 

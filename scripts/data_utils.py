@@ -58,7 +58,7 @@ def preprocess_ls_data(ls_conll_data,
 
     tag2id_dict = tag2id if no_product_tags == False else tag2id_no_prod
     tokenizer = get_tokenizer()
-    docs = ls_conll_data.split('\n\n')[1:]
+    docs = ls_conll_data.split('\n\n')
     n_train_docs = int(len(docs) * prop_train)
     train_docs, val_docs = docs[:n_train_docs], docs[n_train_docs:]
 
@@ -83,8 +83,6 @@ def ls_spans_to_bio(examples: dict):
     (This is a standalone function, not meant for the training process)
     """
 
-    # TODO: Probably should just instantiate the tokenizer elsewhere
-    # via something like `get_tokenizer`
     tokenizer = get_tokenizer()
     seqs: List[str] = [example["data"]["text"] for example in examples]
     labels: List[dict] = [example["completions"][0]["result"] for example in examples]
@@ -139,12 +137,12 @@ class TokenClassificationDataset(torch.utils.data.Dataset):
 
 
 if __name__ == "__main__":
-    with open("../data/train 2 relabeled.json") as f:
+    with open("../data/train_3_relabeled.json") as f:
         data = json.load(f)
 
     tokens, labels = ls_spans_to_bio(data)
 
-    with open("train 2 bio_format.txt", "w") as f:
+    with open("train 3 bio_format.txt", "w") as f:
         for toks, labs in zip(tokens, labels):
             lines = [f"{t}\t{l}" for t, l in zip(toks, labs)]
             entry = "\n".join(lines)

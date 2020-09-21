@@ -4,7 +4,8 @@ from transformers import DistilBertForTokenClassification, TrainingArguments, Tr
 from data_utils import preprocess_ls_data, TokenClassificationDataset
 from eval_utils import evaluate_model
 
-TRAIN_DATA_PATH = "../data/train_03.txt"
+TRAIN_DATA_PATH = "../data/train_04.txt"
+MODEL_SAVE_PATH = "../models/model_07_seed_9_3"
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 NO_PRODUCT_TAGS = False
 
@@ -26,11 +27,9 @@ if NO_PRODUCT_TAGS:
 model = DistilBertForTokenClassification.from_pretrained('distilbert-base-cased', num_labels=len(train_dataset.unique_tags))
 model.to(DEVICE)
 
-MODEL_SAVE_PATH = "../models/model_06_seed_11"
-
 training_args = TrainingArguments(
     output_dir=MODEL_SAVE_PATH,
-    num_train_epochs=5,              # total number of training epochs
+    num_train_epochs=7,              # total number of training epochs
     per_device_train_batch_size=32,  # batch size per device during training
     per_device_eval_batch_size=16,   # batch size for evaluation
     do_eval=True,
@@ -39,7 +38,7 @@ training_args = TrainingArguments(
     warmup_steps=50,                
     weight_decay=0.01,               # strength of weight decay
     overwrite_output_dir=True,
-    seed=11
+    seed=9
 )
 
 trainer = Trainer(

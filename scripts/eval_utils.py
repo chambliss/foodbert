@@ -13,7 +13,7 @@ from functional_model import FoodModel
 logger = logging.getLogger("errors")
 
 performance_dir = "../data/performance"
-eval_file_path = "eval_labeled.json"
+eval_file_path = "eval_relabeled.json"
 model_path = "../models/model_05_seed_9"
 
 def flat_accuracy(gt_labels, pred_labels):    
