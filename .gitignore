@@ -2,6 +2,8 @@
 
 /data
 /models
+food_extractor.egg-info
 
 __pycache__
 
+.DS_Store
