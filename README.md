@@ -118,7 +118,7 @@ Fi 0.952
 
 ### Larger-scale prediction
 
-To predict on many examples, you can use `food_model.do_preds`. I usually use this for generating model predictions to correct in LabelStudio. Calling it looks like this:
+To predict on many examples, you can use `food_model.do_preds`. I usually use this for generating model predictions to correct in [LabelStudio](https://labelstud.io/), the tagging platform used for this project. Calling it looks like this:
 ```python
 from food_extractor.food_model import do_preds
 
@@ -170,7 +170,7 @@ Quick example to clarify the difference between **strict** and **loose** precisi
 
 ### Training 
 
-The model was trained on 715 examples, most of them on the shorter side (many were extracted ingredient entries from web-scraped recipes). The data is BIO-formatted and looks like this:
+The model was trained on 715 examples, most of them on the shorter side (many were extracted ingredient entries from web-scraped recipes). The data is BIO-formatted (begin-inside-outside), and looks like this:
 ```text
 G       B-Ingredient
 ##ar    I-Ingredient
@@ -194,7 +194,7 @@ The training data is small enough to be included in this repo, but of course you
 
 ### Evaluation 
 
-The evaluation data is provided in LabelStudio format, because that is what I used to label it. (I would highly recommend LS for solo labeling projects, by the way.) It has 138 examples and looks like this:
+The evaluation data is provided in [LabelStudio](https://labelstud.io/) format, because that is what I used to label it. (I would highly recommend LS for solo labeling projects, by the way.) It has 138 examples and looks like this:
 
 ```text
 [
@@ -225,7 +225,7 @@ The evaluation data is provided in LabelStudio format, because that is what I us
           ...
 ```
 
-If you want to import it directly into your own LabelStudio project, this is the config I used in my project:
+If you want to import it directly into your own [LabelStudio](https://labelstud.io/) project, this is the config I used in my project:
 ```xml
 <View>
   <Labels name="label" toName="text">
