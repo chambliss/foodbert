@@ -4,8 +4,6 @@
 
 \* (to my knowledge, as of Oct 2020)
 
-----
-
 ## Quickstart
 
 ### Setup
@@ -13,7 +11,7 @@
 1. Clone the repo
 
     ```bash
-    git clone [repo-ssh-link]
+    git clone git@github.com:chambliss/foodbert.git
     ```
 
 2. Pip install the modules
@@ -118,7 +116,7 @@ Fi 0.952
 ```
 
 
-### Large-scale prediction
+### Larger-scale prediction
 
 To predict on many examples, you can use `food_model.do_preds`. I usually use this for generating model predictions to correct in LabelStudio. Calling it looks like this:
 ```python
@@ -254,11 +252,11 @@ Labeling for this task was surprisingly difficult, but there are a few rules tha
 
 ### Training your own model
 
-You can easily train a new model or fine-tune this one using the [training script](). You will need to label some data and convert it to BIO format. A utility function for converting LabelStudio data to BIO format is provided in the [data_utils]() module.
+You can easily train a new model or fine-tune this one using the [training script](https://github.com/chambliss/foodbert/blob/master/food_extractor/train.py#L8). You will need to label some data and convert it to BIO format. A utility function for converting LabelStudio data to BIO format is provided in the [data_utils](https://github.com/chambliss/foodbert/blob/master/food_extractor/data_utils.py#L112) module.
 
 ### Evaluating a model
 
-I've created a set of evaluation utilities [eval_utils.py]() that can do a comprehensive evaluation for you. From the `eval_utils.evaluate_model` definition:
+I've created a set of evaluation utilities [eval_utils.py](https://github.com/chambliss/foodbert/blob/master/food_extractor/eval_utils.py#L216) that can do a comprehensive evaluation for you. From the `eval_utils.evaluate_model` definition:
 ```python
 def evaluate_model(
     model_path: str, eval_file_path: str, no_product_labels: bool = False
