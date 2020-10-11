@@ -147,7 +147,7 @@ Also note that these are **raw predictions** from the model, not the quality-fil
 
 **Performance**
 
-The model performs best on the Ingredient tag. Products were not common in the training data, and thus have significantly worse performance. 
+The model performs best on the Ingredient tag, reaching over 90% relaxed precision and over 75% relaxed recall. Products were not common in the training data, and thus have significantly worse performance. 
 
 If you have a production use case in mind for this, the model should perform well enough (with some data cleaning) to systematically extract ingredients, but I would not recommend using the Product results for production use cases at the moment.
 
