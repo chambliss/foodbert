@@ -91,10 +91,10 @@ def test_extract_foods():
 def test_do_preds():
 
     # test that it runs without issue (not going to test the full output)
-    do_preds("../models/model_seed_9", test_text, "./whatever.json", format="json")
+    do_preds("chambliss/distilbert-for-food-extraction", test_text, "./whatever.json", format="json")
 
     # test that it raises an error if an incorrect format is specified
     with pytest.raises(UnknownFormatError):
         do_preds(
-            "../models/model_seed_9", test_text, "./whatever.txt", format="butterflies"
+            "chambliss/distilbert-for-food-extraction", test_text, "./whatever.json", format="butterflies"
         )

@@ -2,6 +2,7 @@
 
 /data
 /models
+/scripts
 food_extractor.egg-info
 
 __pycache__
