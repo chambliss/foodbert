@@ -4,8 +4,6 @@
 
 \* (to my knowledge, as of Oct 2020)
 
-----
-
 ## Quickstart
 
 ### Setup
@@ -13,7 +11,7 @@
 1. Clone the repo
 
     ```bash
-    git clone [repo-ssh-link]
+    git clone git@github.com:chambliss/foodbert.git
     ```
 
 2. Pip install the modules
@@ -118,9 +116,9 @@ Fi 0.952
 ```
 
 
-### Large-scale prediction
+### Larger-scale prediction
 
-To predict on many examples, you can use `food_model.do_preds`. I usually use this for generating model predictions to correct in LabelStudio. Calling it looks like this:
+To predict on many examples, you can use `food_model.do_preds`. I usually use this for generating model predictions to correct in [LabelStudio](https://labelstud.io/), the tagging platform used for this project. Calling it looks like this:
 ```python
 from food_extractor.food_model import do_preds
 
@@ -147,7 +145,7 @@ Also note that these are **raw predictions** from the model, not the quality-fil
 
 **Performance**
 
-The model performs best on the Ingredient tag. Products were not common in the training data, and thus have significantly worse performance. 
+The model performs best on the Ingredient tag, reaching over 90% relaxed precision and over 75% relaxed recall. Products were not common in the training data, and thus have significantly worse performance. 
 
 If you have a production use case in mind for this, the model should perform well enough (with some data cleaning) to systematically extract ingredients, but I would not recommend using the Product results for production use cases at the moment.
 
@@ -172,7 +170,7 @@ Quick example to clarify the difference between **strict** and **loose** precisi
 
 ### Training 
 
-The model was trained on 715 examples, most of them on the shorter side (many were extracted ingredient entries from web-scraped recipes). The data is BIO-formatted and looks like this:
+The model was trained on 715 examples, most of them on the shorter side (many were extracted ingredient entries from web-scraped recipes). The data is BIO-formatted (begin-inside-outside), and looks like this:
 ```text
 G       B-Ingredient
 ##ar    I-Ingredient
@@ -196,7 +194,7 @@ The training data is small enough to be included in this repo, but of course you
 
 ### Evaluation 
 
-The evaluation data is provided in LabelStudio format, because that is what I used to label it. (I would highly recommend LS for solo labeling projects, by the way.) It has 138 examples and looks like this:
+The evaluation data is provided in [LabelStudio](https://labelstud.io/) format, because that is what I used to label it. (I would highly recommend LS for solo labeling projects, by the way.) It has 138 examples and looks like this:
 
 ```text
 [
@@ -227,7 +225,7 @@ The evaluation data is provided in LabelStudio format, because that is what I us
           ...
 ```
 
-If you want to import it directly into your own LabelStudio project, this is the config I used in my project:
+If you want to import it directly into your own [LabelStudio](https://labelstud.io/) project, this is the config I used in my project:
 ```xml
 <View>
   <Labels name="label" toName="text">
@@ -254,11 +252,11 @@ Labeling for this task was surprisingly difficult, but there are a few rules tha
 
 ### Training your own model
 
-You can easily train a new model or fine-tune this one using the [training script](). You will need to label some data and convert it to BIO format. A utility function for converting LabelStudio data to BIO format is provided in the [data_utils]() module.
+You can easily train a new model or fine-tune this one using the [training script](https://github.com/chambliss/foodbert/blob/master/food_extractor/train.py#L8). You will need to label some data and convert it to BIO format. A utility function for converting LabelStudio data to BIO format is provided in the [data_utils](https://github.com/chambliss/foodbert/blob/master/food_extractor/data_utils.py#L112) module.
 
 ### Evaluating a model
 
-I've created a set of evaluation utilities [eval_utils.py]() that can do a comprehensive evaluation for you. From the `eval_utils.evaluate_model` definition:
+I've created a set of evaluation utilities [eval_utils.py](https://github.com/chambliss/foodbert/blob/master/food_extractor/eval_utils.py#L216) that can do a comprehensive evaluation for you. From the `eval_utils.evaluate_model` definition:
 ```python
 def evaluate_model(
     model_path: str, eval_file_path: str, no_product_labels: bool = False
