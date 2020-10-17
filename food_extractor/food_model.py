@@ -6,18 +6,19 @@ import torch
 from transformers import (
     DistilBertForTokenClassification,
     DistilBertTokenizerFast,
-    AutoModel,
 )
 
 from food_extractor.data_utils import id2tag, id2tag_no_prod, flatten
 
+HF_MODEL_PATH = "chambliss/distilbert-for-food-extraction"
+
 
 class FoodModel:
-    def __init__(self, model_path: str, no_product_labels: bool = False):
+    def __init__(self, model_path: str = HF_MODEL_PATH, no_product_labels: bool = False):
 
-        if model_path == "chambliss/distilbert-for-food-extraction":
-            self.model = AutoModel.from_pretrained(
-                "chambliss/distilbert-for-food-extraction"
+        if model_path == HF_MODEL_PATH:
+            self.model = DistilBertForTokenClassification.from_pretrained(
+                HF_MODEL_PATH
             )
         else:
             self.model = DistilBertForTokenClassification.from_pretrained(model_path)
