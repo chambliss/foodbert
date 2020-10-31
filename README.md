@@ -14,18 +14,18 @@
     git clone git@github.com:chambliss/foodbert.git
     ```
 
-2. Pip install the modules
-   
-    ```bash
-    cd foodbert
-    pip install -e .
-    ```
-
-3. Set up and activate the environment
+2. Set up and activate the environment
 
     ```bash
     conda env create -f environment.yml
     conda activate hf-nlp
+    ```
+
+3. Pip install the modules
+   
+    ```bash
+    cd foodbert
+    pip install -e .
     ```
 
 ### Load the trained model from the `transformers` model zoo
