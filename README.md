@@ -17,6 +17,7 @@
 2. Set up and activate the environment
 
     ```bash
+    cd foodbert
     conda env create -f environment.yml
     conda activate hf-nlp
     ```
@@ -24,7 +25,6 @@
 3. Pip install the modules
    
     ```bash
-    cd foodbert
     pip install -e .
     ```
 
